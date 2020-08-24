@@ -48,7 +48,7 @@ class FoodController extends Controller
         $image->move($destinationPath, $name);
         Food::create([
             'name'=>$request->get('name'),
-            'descrliption'=>$request->get('description'),
+            'description'=>$request->get('description'),
             'price'=>$request->get('price'),
             'category_id'=>$request->get('category'),
             'image'=>$name
