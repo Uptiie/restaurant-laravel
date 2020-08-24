@@ -14,7 +14,8 @@ class FoodController extends Controller
      */
     public function index()
     {
-        return "hi";
+        $foods = Food::latest()->paginate(10);
+        return view('food.index', compact('foods'));
     }
 
     /**
@@ -75,7 +76,8 @@ class FoodController extends Controller
      */
     public function edit($id)
     {
-        //
+        $food = Food::find($id);
+        return view('food.edit', compact('food'));
     }
 
     /**
@@ -87,7 +89,32 @@ class FoodController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request,[
+            'name'=>'required',
+            'description'=>'required',
+            'price'=>'required|integer',
+            'category'=>'required',
+            'image'=>'required|mimes:jpg,jpeg,png,svg',
+            
+
+        ]);
+        
+        $food = Food::find($id);
+        $image = $food->image;
+
+        if($request->hasFile('image')){
+            $image = $request->file('image');
+            $name = time().'.'.$image->getClientOriginalExtension();
+            $destinationPath = public_path('/images');
+            $image->move($destinationPath,$name);
+        }
+        $food->name = $request->get('name');
+        $food->description = $request->get('description');
+        $food->price = $request->get('price');
+        $food->category_id = $request->get('category');
+        $food->image = $name;
+        $food->save();
+        return redirect()->route('food.index')->with('message', 'Food Updated');
     }
 
     /**
